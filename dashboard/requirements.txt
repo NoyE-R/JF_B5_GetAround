@@ -1,0 +1,12 @@
+uvicorn
+argparse
+gunicorn
+requests
+pandas
+numpy
+streamlit
+openpyxl
+plotly
+seaborn
+scikit-learn
+matplotlib 

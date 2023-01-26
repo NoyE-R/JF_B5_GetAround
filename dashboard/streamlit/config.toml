@@ -1,0 +1,9 @@
+[browser]
+serverAddress = "local"
+
+[global]
+dataFrameSerialization = "legacy"
+
+[theme]
+base="dark"
+primaryColor="#4be8e0"
