@@ -1,8 +1,4 @@
 import streamlit as st
-import pandas as pd
-import plotly.express as px 
-import plotly.graph_objects as go
-import numpy as np
 
 # Config
 st.set_page_config(
@@ -13,9 +9,7 @@ st.set_page_config(
 # App
 st.title("Get Around: a car rental analysis")
 st.markdown("""
-    You will find here a synthetic data analysis on rental delay and cancelation.
-
-    Data were provided by Get Around company from their records.
+    You will find here two kind of analysis performed on dataset provided by Get Around company from their records.
 
     You could make a round on their web site here: https://fr.getaround.com/.
 
@@ -23,43 +17,30 @@ st.markdown("""
     
 """)
 
-# data
-@st.cache
-def load_data(nrows):
-    xls = pd.ExcelFile('get_around_delay_analysis.xlsx')
-    dataset = pd.read_excel(xls, 'rentals_data')
-    return dataset
-
-st.subheader("Load and showcase data")
-data_load_state = st.text('Loading data...')
-dataset = load_data(1000)
-data_load_state.text("")
-
 # Side bar 
 st.sidebar.success("What do you want to know?")
 
 # Run the below code if the check is checked
+st.subheader("Data analysis")
 st.markdown("""
-    Dataset of the year 2017 of car rental contracts (ended and canceled) including mobile and connect checkin.
+    Second tab of this dashboard is a synthetic data analysis on rental delay and cancelation.
 
+    The dataset focuses on the year 2017 of car rental contracts (ended and canceled) including mobile and connect checkin.
+
+    Purpose of the analysis was to determine the scope of the analysis (connect and/or mobile rentals) and to define a threshold value for the duration between two car rentals.
+
+    The analysis leaded to propose a scope on the **connected** contracts and a threshold value of **240** minutes.
 """)
 
-if st.checkbox('Show raw data'):
-    st.subheader('Raw data')
-    st.write(dataset)
-
-## overview
-st.header("Some numbers")
-col1, col2, col3 = st.columns(3)
-col1.metric("Rentals number", value=dataset.shape[0])
-col2.metric("Number of mobile checkin", value=dataset.loc[dataset["checkin_type"] != "connect",:].shape[0])
-col3.metric("Number of connected checkin", value=dataset.loc[dataset["checkin_type"] == "connect",:].shape[0])
-
+st.subheader("Machine learning model and API")
 st.markdown("""
-    Number of canceled and ended car rental contracts by checkin type.
+    The third tab of this dashboard displays a short overview of the exploratory analysis and the selected machine learning model.
 
+    The dataset contains car characteristics and daily rental prices.
+
+    The goal for this study was to develop a machine learning model to optimize the daily rental rice offered by the car owners.
+
+    The model can be used thanks to an API that you can find at the following link: https://getaround23fastapi.herokuapp.com/docs.
+
+    Several endpoints are proposed in addition to the prediction option to help you to format your request.
 """)
-
-counted = dataset[["state", "checkin_type"]].groupby(["state", "checkin_type"]).value_counts().reset_index()
-counted = counted.rename(columns={"checkin_type":"type of checkin", 0:"Number of rentals"})
-st.table(counted)

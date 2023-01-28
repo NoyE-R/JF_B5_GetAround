@@ -1,19 +1,14 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import plotly.express as px 
 import plotly.graph_objects as go
 import numpy as np
+import pickle
 
 from sklearn.model_selection import train_test_split
-from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import  OneHotEncoder, StandardScaler
-from sklearn.compose import ColumnTransformer
-from sklearn.model_selection import cross_val_score, GridSearchCV
-from sklearn.linear_model import LinearRegression, Lasso, Ridge
 from sklearn.metrics import r2_score
+from sklearn.model_selection import cross_val_score
 
 # App
 st.set_page_config(
@@ -57,39 +52,66 @@ st.table(100*working.isnull().sum()/working.shape[0])
 
 ### visualization
 st.markdown("""
+    Target (rental_price_per_day) distributions
+""")
+
+col1, col2 = st.columns(2, gap="large")
+with col1:
+    fig1 = px.histogram(data_frame=working, x="rental_price_per_day", color="has_getaround_connect",
+                    marginal="rug", hover_data=working.columns,
+                    labels={"has_getaround_connect":"Get Around Connected?",
+                            "rental_price_per_day":"Rental daily price"},
+                    color_discrete_sequence=px.colors.qualitative.T10)
+    st.plotly_chart(fig1, use_container_width=True)
+
+with col2:
+    fig2 = px.histogram(data_frame=working, x="rental_price_per_day", color="fuel",
+                        marginal="rug", hover_data=working.columns,
+                        labels={"rental_price_per_day":"Rental daily price"},
+                        color_discrete_sequence=px.colors.qualitative.Dark2)
+    st.plotly_chart(fig2, use_container_width=True)
+
+
+st.markdown("""
     Relationships between target (rental_price_per_day) and numerical features
 """)
 
 col1, col2 = st.columns(2, gap="large")
 with col1:
-    fig1, ax = plt.subplots(figsize=(3,3))
-    sns.set_theme(style="darkgrid")
-    sns.scatterplot(data=working, x="mileage", y="rental_price_per_day", legend=False)
-    ax.set(xlabel='Mileage',
-            ylabel='Daily rental price',
-            title='Rental prices = f(Mileage)')
-    st.write(fig1)
+    fig3 = px.scatter(data_frame=working, x="engine_power", y="rental_price_per_day", color='automatic_car',
+                    labels={"engine_power":"Engine power",
+                            "rental_price_per_day":"Rental daily price",
+                            "automatic_car":"Automatic car"},
+                    color_discrete_sequence=px.colors.qualitative.Safe)
+    st.plotly_chart(fig3, use_container_width=True)
 
 with col2:
-    fig2, ax = plt.subplots(figsize=(3,3))
-    sns.set_theme(style="darkgrid")
-    sns.scatterplot(data=working, x="engine_power", y="rental_price_per_day", legend=False)
-    ax.set(xlabel='Engine power',
-            ylabel='Daily rental price',
-            title='Rental prices = f(Engine power)')
-    st.write(fig2)
+    fig4 = px.scatter(data_frame=working, x="mileage", y="rental_price_per_day", color='winter_tires',
+                    labels={"mileage":"Mileage",
+                            "rental_price_per_day":"Rental daily price",
+                            "winter_tires":"Winter tires"},
+                    color_discrete_sequence=px.colors.qualitative.Safe)
+    st.plotly_chart(fig4, use_container_width=True)
 
 #### correlation matrix
 corr_matrix = working.corr().round(2)
-f, ax = plt.subplots(figsize=(9, 6))
-sns.heatmap(corr_matrix, annot=True, ax=ax)
+fh = go.Figure()
+fh.add_trace(
+    go.Heatmap(
+        x = corr_matrix.columns,
+        y = corr_matrix.index,
+        z = np.array(corr_matrix),
+        text=corr_matrix.values,
+        texttemplate='%{text:.2f}'
+    )
+)
 
 col1, col2, col3 = st.columns([1,5,1])
 with col2:
     st.markdown("""
         Correlation matrix between features and target (rental_price_per_day)
     """)
-    st.write(f)
+    st.plotly_chart(fh)
 
 ## model
 st.header("Machine Learning model")
@@ -101,7 +123,13 @@ st.markdown("""
 """)
 st.markdown("")
 
-### preprocessing
+### preprocessor and model upload
+with open("../src/model_bestRidge.pkl", "rb") as f:
+    model = pickle.load(f)
+
+with open("../src/preprocessor.pkl", "rb") as f:
+    preprocessor = pickle.load(f)
+
 target = "rental_price_per_day"
 features_list = ['model_key', 'mileage', 'engine_power', 'private_parking_available', 'has_gps', 'fuel', 'paint_color', 'car_type',
                 'has_air_conditioning', 'automatic_car', 'has_getaround_connect', 'has_speed_regulator', 'winter_tires']
@@ -113,36 +141,19 @@ X = working.loc[:,features_list]
 Y = working.loc[:,target]
 X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=5)
 
-    # pipeline
-    ## for numeric
-numeric_transformer = Pipeline(steps=[
-    ('scaler', StandardScaler())
-])
+### running preprocessor
+X_train = preprocessor.transform(X_train)
+X_test = preprocessor.transform(X_test)
 
-    ## for categorical
-categorical_transformer = Pipeline(steps=[
-    ('encoder', OneHotEncoder(drop='first'))
-    ])
+### running model
+Y_train_pred = model.predict(X_train)
+Y_test_pred = model.predict(X_test)
 
-    ## column transformer to apply all the transformation
-preprocessor = ColumnTransformer(
-    transformers=[
-        ('num', numeric_transformer, numeric_features),
-        ('cat', categorical_transformer, categorical_features)
-    ])
-
-X_train = preprocessor.fit_transform(X_train).toarray()
-X_test = preprocessor.transform(X_test).toarray()
-
-### Perform grid search
-best_model = Ridge(alpha=2)
-best_model.fit(X_train, Y_train)
-
-scoresR = cross_val_score(best_model, X_train, Y_train, cv=10)
+scoresR = cross_val_score(model, X_train, Y_train, cv=10)
 
 col1, col2, col3 = st.columns(3)
-col1.metric("R² score on training set:", round(best_model.score(X_train, Y_train), 3))
-col2.metric("R² score on test set:", round(best_model.score(X_test, Y_test), 3))
+col1.metric("R² score on training set:", round(r2_score(Y_train, Y_train_pred), 3))
+col2.metric("R² score on test set:", round(r2_score(Y_test, Y_test_pred), 3))
 col3.metric("R² standard error:", round(scoresR.std(), 3))
 
 ### coefficients
@@ -158,7 +169,7 @@ for name, pipeline, features_list in preprocessor.transformers_:
         features = pipeline.named_steps['encoder'].get_feature_names_out()
     column_names.extend(features)
 
-coefs = pd.DataFrame(index = column_names, data = best_model.coef_.transpose(), columns=["coefficients"])
+coefs = pd.DataFrame(index = column_names, data = model.coef_.transpose(), columns=["coefficients"])
 feature_importance = abs(coefs).sort_values(by = 'coefficients')
 
 fig = px.bar(feature_importance, orientation = 'v')

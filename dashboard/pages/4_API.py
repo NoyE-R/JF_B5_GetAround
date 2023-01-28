@@ -9,4 +9,6 @@ st.set_page_config(
 st.title("Predict rental prices")
 st.sidebar.success("What do you want to know?")
 
-st.markdown("")
+st.markdown("""
+    You can find the API and its description at the following link: https://getaround23fastapi.herokuapp.com/docs
+""")

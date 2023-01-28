@@ -7,6 +7,5 @@ numpy
 streamlit
 openpyxl
 plotly
-seaborn
-scikit-learn
+scikit-learn==1.1.2
 matplotlib 
