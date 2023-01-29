@@ -103,25 +103,6 @@ async def nameC():
     list_col = {"names of the columns:" : list(dataset.columns)}
     return list_col
 
-## unique-values endpoint
-@app.get("/unique-values", tags=["Data-Preview"])
-async def unique_values(col: str):
-    """
-    Get unique values from a given no numerical column.
-    
-    You should specify `col` parameter by the name of the researched column.
-
-    Expected response:
-    ```
-    ['VAL1, 'VAL2', ...]
-    ```
-    """
-    dataset = pd.read_csv("get_around_pricing_project.csv")
-    dataset = dataset.drop(axis=1, columns="Unnamed: 0")
-    df = pd.Series(dataset[col].unique())
-
-    return df.to_json()
-
 ## type-columns endpoint
 @app.get("/type-columns/{tvar}", tags=["Data-Preview"])
 async def uniVal(tvar: str = "numeric"):
@@ -162,6 +143,26 @@ async def uniVal(tvar: str = "numeric"):
                 }
 
         return list_val
+
+## unique-values endpoint
+@app.get("/unique-values", tags=["Data-Preview"])
+async def unique_values(col: str):
+    """
+    Get unique values from a given no numerical column.
+    
+    You should specify `col` parameter by the name of the researched column.
+
+    Expected response:
+    ```
+    ['VAL1, 'VAL2', ...]
+    ```
+    """
+    dataset = pd.read_csv("get_around_pricing_project.csv")
+    dataset = dataset.drop(axis=1, columns="Unnamed: 0")
+    df = list(dataset[col].unique())
+
+    return df
+
 
 ## endpoint predict
 @app.post("/predict", tags=["Machine-Learning"])

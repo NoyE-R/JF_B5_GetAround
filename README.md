@@ -12,7 +12,7 @@
 # Folder organization
 - data:
     - get_around_delay_analysis.xlsx: working dataset for data analysis and dashboarding.
-    - get_around_pricing_project.csv: working dataset for machine learning and api development.
+    - get_around_pricing_project.csv: working dataset for machine learning and API development.
 
 - dashoboard:
     - Home.py: Python script for dashboard home page
@@ -25,6 +25,8 @@
     - Dockerfile
     - requirements.txt
     - app.py: Python script for API development
+    - model_bestRidge.pkl: saving of the selected model
+    - preprocessor.pkl: saving of the data preprocessing step of the selected model
 
 - DAscopethreshold_MLprice.ipynb: Jupyter notebook compiling all the code for data analysis, graphics and machine learning.
 
