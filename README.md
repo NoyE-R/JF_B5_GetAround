@@ -2,12 +2,12 @@
 
 # Presentation of the repository
 - Three Machine Learning projects of the Jedha Bootcamp certification (Data Fullstack) including linear regression, classification and clustering analysis.
-- Avalaible video presention the analytic approach and results: Vidyard link
+- Avalaible video presention the analytic approach and results: Vidyard [link](https://share.vidyard.com/watch/Zn9CGMy66me9zVaf5SB6jZ?)
 - Contact e-mail: [contact](noyer.estelle@gmail.com)
 
 # Studied projects in this repository
-- dashboard: project aiming to propose online dashboard compiling data analysis of Get Around dataset. You can find the dashboard at this link: https://getaround23.herokuapp.com/
-- api: project aiming to create /predict endpoint on a new API. You can find the dashboard at this link: https://getaround23fastapi.herokuapp.com/docs
+- dashboard: project aiming to propose online dashboard compiling data analysis of Get Around dataset. You can find the dashboard at this [link](https://getaround23.herokuapp.com/)
+- api: project aiming to create /predict endpoint on a new API. You can find the dashboard at this [link](https://getaround23fastapi.herokuapp.com/docs)
 
 # Folder organization
 - data:
