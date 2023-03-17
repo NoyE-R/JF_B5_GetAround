@@ -5,8 +5,8 @@
 - Contact e-mail: [contact](noyer.estelle@gmail.com)
 
 # Studied projects in this repository
-- dashboard: project aiming to propose online dashboard compiling data analysis of Get Around dataset. You can find the dashboard at this [link](https://getaround23.herokuapp.com/)
-- api: project aiming to create /predict endpoint on a new API. You can find the dashboard at this [link](https://getaround23fastapi.herokuapp.com/docs)
+- dashboard: project aiming to propose online dashboard compiling data analysis of Get Around dataset.
+- api: project aiming to create /predict endpoint on a new API.
 
 # Folder organization
 - data:
