@@ -2,7 +2,6 @@
 
 # Presentation of the repository
 - Three Machine Learning projects of the Jedha Bootcamp certification (Data Fullstack) including linear regression, classification and clustering analysis.
-- Avalaible video presention the analytic approach and results: Vidyard [link](https://share.vidyard.com/watch/Zn9CGMy66me9zVaf5SB6jZ?)
 - Contact e-mail: [contact](noyer.estelle@gmail.com)
 
 # Studied projects in this repository
